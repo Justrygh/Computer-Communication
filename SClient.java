@@ -317,7 +317,6 @@ public class SClient extends javax.swing.JFrame {
 		
 	private void Send(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Send
 			client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, message_field.getText()));				
-			append(message_field.getText());
 			message_field.setText("");
 
 	}//GEN-LAST:event_Send

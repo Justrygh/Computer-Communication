@@ -4,6 +4,8 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
 /*
  * The server that can be run both as a console application or a GUI
  */
@@ -11,7 +13,7 @@ public class Server {
 	// a unique ID for each connection
 	private static int uniqueId;
 	// an ArrayList to keep the list of the Client
-	private ArrayList<ClientThread> al;
+	public static ArrayList<ClientThread> al;
 	// if I am in a GUI
 	private ServerGUI sg;
 	// to display time
@@ -145,6 +147,7 @@ public class Server {
 			// found it
 			if(ct.id == id) {
 				al.remove(i);
+			
 				return;
 			}
 		}
@@ -187,6 +190,9 @@ public class Server {
 		Socket socket;
 		ObjectInputStream sInput;
 		ObjectOutputStream sOutput;
+		
+		private SClient cg;
+		
 		// my unique id (easier for deconnection)
 		int id;
 		// the Username of the Client
@@ -211,6 +217,9 @@ public class Server {
 				// read the username
 				username = (String) sInput.readObject();
 				display(username + " just connected.");
+				
+				
+				
 			}
 			catch (IOException e) {
 				display("Exception creating new Input/output Streams: " + e);
@@ -249,6 +258,8 @@ public class Server {
 					broadcast(username + ": " + message);
 					break;
 				case ChatMessage.LOGOUT:
+					
+					
 					display(username + " disconnected with a LOGOUT message.");
 					keepGoing = false;
 					break;
@@ -288,7 +299,7 @@ public class Server {
 		/*
 		 * Write a String to the Client output stream
 		 */
-		private boolean writeMsg(String msg) {
+		public boolean writeMsg(String msg) {
 			// if Client is still connected send the message to it
 			if(!socket.isConnected()) {
 				close();
@@ -296,6 +307,7 @@ public class Server {
 			}
 			// write the message to the stream
 			try {
+				
 				sOutput.writeObject(msg);
 			}
 			// if an error occurs, do not abort just inform the user

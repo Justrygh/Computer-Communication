@@ -3,6 +3,8 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+import Codes.Server.ClientThread;
+
 /*
  * The Client that can be run both as a console or a GUI
  */
@@ -14,7 +16,7 @@ public class Client  {
 	private Socket socket;
 
 	// if I use a GUI or not
-	private ClientGUI cg;
+	private SClient cg;
 	
 	// the server, the port and the username
 	private String server, username;
@@ -35,7 +37,7 @@ public class Client  {
 	 * Constructor call when used from a GUI
 	 * in console mode the ClienGUI parameter is null
 	 */
-	Client(String server, int port, String username, ClientGUI cg) {
+	Client(String server, int port, String username, SClient cg) {
 		this.server = server;
 		this.port = port;
 		this.username = username;
@@ -77,6 +79,7 @@ public class Client  {
 		// will send as a String. All other messages will be ChatMessage objects
 		try
 		{
+			// כשמתחברים
 			sOutput.writeObject(username);
 		}
 		catch (IOException eIO) {
@@ -94,15 +97,20 @@ public class Client  {
 	private void display(String msg) {
 		if(cg == null)
 			System.out.println(msg);      // println in console mode
-		else
+		else {
+			
 			cg.append(msg + "\n");		// append to the ClientGUI JTextArea (or whatever)
-	}
+	}}
 	
 	/*
 	 * To send a message to the server
 	 */
 	void sendMessage(ChatMessage msg) {
 		try {
+			if (msg.getType() == 1) {
+			
+			}
+			
 			sOutput.writeObject(msg);
 		}
 		catch(IOException e) {
@@ -129,10 +137,11 @@ public class Client  {
 		catch(Exception e) {} // not much else I can do
 		
 		// inform the GUI
-		if(cg != null)
-			cg.connectionFailed();
+		if(cg != null) {
+		//	cg.connectionFailed();
+			System.out.println("err 22342");
 			
-	}
+	}}
 	/*
 	 * To start the Client in console mode use one of the following command
 	 * > java Client
@@ -231,13 +240,14 @@ public class Client  {
 						System.out.print("> ");
 					}
 					else {
+						//  כששולחים הודעה
 						cg.append(msg);
 					}
 				}
 				catch(IOException e) {
-					display("Server has close the connection: " + e);
+					display("Server has close the connection");
 					if(cg != null) 
-						cg.connectionFailed();
+					//	cg.connectionFailed();
 					break;
 				}
 				// can't happen with a String object but need the catch anyhow
