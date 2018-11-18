@@ -1,4 +1,4 @@
-package Codes;
+package _Codes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -10,11 +10,15 @@ package Codes;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import Codes.Client.ListenFromServer;
+import Codes.ChatMessage;
+
+//import _Codes.ChatMessage;
+
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 
 import javax.swing.GroupLayout;
@@ -22,7 +26,7 @@ import javax.swing.GroupLayout;
 /**
  * @author erlichsefi
  */
-public class SClient extends javax.swing.JFrame  {
+public class SClient extends javax.swing.JFrame implements Serializable  {
 //////////////////////////////////// Client:
 	
 	
@@ -40,7 +44,7 @@ public class SClient extends javax.swing.JFrame  {
 	
 	
 	// if I use a GUI or not
-	private ClientGUI cg;
+	private SClient cg;
 	
 	// the server, the port and the username
 	private String server, username;
@@ -159,6 +163,27 @@ public class SClient extends javax.swing.JFrame  {
 			cg.connectionFailed();
 			
 	}
+	
+	// called by the GUI is the connection failed
+		// we reset our buttons, label, textfield
+		public void connectionFailed() {
+			System.out.println("// connection failed");
+//			login.setEnabled(true);
+//			logout.setEnabled(false);
+//			whoIsIn.setEnabled(false);
+//			label.setText("Enter your username below");
+//			tf.setText("Anonymous");
+//			// reset port number and host name as a construction time
+//			tfPort.setText("" + defaultPort);
+//			tfServer.setText(defaultHost);
+//			// let the user change them
+//			tfServer.setEditable(false);
+//			tfPort.setEditable(false);
+//			// don't react to a <CR> after the username
+//			tf.removeActionListener(this);
+//			connected = false;
+		}
+		
 	/*
 	 * To start the Client in console mode use one of the following command
 	 * > java Client
@@ -470,7 +495,7 @@ public class SClient extends javax.swing.JFrame  {
 	
 		
 		// ok it is a connection request
-		String username = dst.getText().trim();
+		String username = my_name.getText().trim();
 	
 		// empty username ignore it
 		if(username.length() == 0) {
@@ -523,7 +548,6 @@ public class SClient extends javax.swing.JFrame  {
 		void append(String str) {
 			client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, str));
 			
-			System.out.println(my_name.getText());
 			jTextArea_Main.append(my_name.getText() +": " +  str + "\n");
 			message_field.setText("");
 		//	jTextArea_Main.setCaretPosition(message_field.getText().length() - 1);
@@ -623,7 +647,11 @@ public class SClient extends javax.swing.JFrame  {
 			}
 		});
 	}
-
+//////////////////
+	
+	
+	
+	
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JTextField dst;
 	private javax.swing.JTextField ip_ad;

@@ -1,10 +1,11 @@
-package Codes;
+package _Codes;
 
 import javax.swing.*;
 
-import Codes.Server.ClientThread;
+import Codes.ChatMessage;
 
-//import Codes.Servejr.ClientThread;
+//import Codes.Server.ClientThread;
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,9 +14,8 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.net.*;
 import java.io.*;
-import java.util.*;
+
 
 /*
  * The server as a GUI
@@ -101,7 +101,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		JPanel center = new JPanel(new GridLayout(2,1));
 		chat = new JTextArea(80,80);
 		chat.setEditable(false);
-		chat.setVisible(false);
+		//chat.setVisible(false);
 		appendRoom("Chat room.\n");
 		center.add(new JScrollPane(chat));
 		event = new JTextArea(80,80);
@@ -118,11 +118,11 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 
 	// append message to the two JTextArea
 	// position at the end
-	void appendRoom(String str) {
+	public void appendRoom(String str) {
 		chat.append(str);
 		chat.setCaretPosition(chat.getText().length() - 1);
 	}
-	void appendEvent(String str) {
+	public void appendEvent(String str) {
 		event.append(str);
 	//	event.setCaretPosition(chat.getText().length() - 1);
 		
@@ -132,6 +132,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 	public void actionPerformed(ActionEvent e) {
 		// if running we have to stop
 		if(server != null) {
+			
 			server.stop();
 			server = null;
 			tPortNumber.setEditable(true);
@@ -150,12 +151,21 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			return;
 		}
 		// ceate a new Server
+		
+		if (stopStart.isEnabled() == true) {
+		
 		server = new ServerGUI(port, this);
 		// and start it as a thread
 		new ServerRunning().start();
 		stopStart.setEnabled(false);
+		
 		stop.setEnabled(true);
 		tPortNumber.setEditable(false);
+		}
+		else {
+			System.out.println("?");
+			
+		}
 	}
 	public void start() {
 		keepGoing = true;
@@ -452,6 +462,66 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			return true;
 		}
 	}
+	
+	///////////////////////////chat msg
+	
+	
+
+	 
+
+    //protected static final long serialVersionUID = 1112122200L;
+
+ 
+
+    // The different types of message sent by the Client
+
+    // WHOISIN to receive the list of the users connected
+
+    // MESSAGE an ordinary message
+
+    // LOGOUT to disconnect from the Server
+
+    public static final int WHOISIN = 0;
+
+
+
+	public static final int MESSAGE = 1;
+
+
+
+	public static final int LOGOUT = 2;
+
+    private int type;
+
+    private String message;
+
+     
+
+    // constructor
+
+    public void ChatMessage(int type, String message) {
+
+        this.type = type;
+
+        this.message = message;
+
+    }
+
+     
+
+    // getters
+
+  /*  public int getType() {
+
+        return type;
+
+    }*/
+
+    public String getMessage() {
+
+        return message;
+
+    }
 	
 }
 
