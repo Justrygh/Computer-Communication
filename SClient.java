@@ -1,249 +1,21 @@
-package _Codes;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+package Codes;
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-
-import Codes.ChatMessage;
-
-//import _Codes.ChatMessage;
-
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.Socket;
 
 import javax.swing.GroupLayout;
 
 /**
  * @author erlichsefi
  */
-public class SClient extends javax.swing.JFrame implements Serializable  {
-//////////////////////////////////// Client:
-	
-	
-	// for I/O
-	private ObjectInputStream sInput;		// to read from the socket
-	private ObjectOutputStream sOutput;		// to write on the socket
-	private Socket socket;
-
-	
+public class SClient extends javax.swing.JFrame {
 	// the Client object
-	private SClient client;
-	
-	
-	
-	
-	
-	// if I use a GUI or not
-	private SClient cg;
-	
-	// the server, the port and the username
-	private String server, username;
-	private int port;
-
-	/*
-	 *  Constructor called by console mode
-	 *  server: the server address
-	 *  port: the port number
-	 *  username: the username
-	 */
-	SClient(String server, int port, String username) {
-		// which calls the common constructor with the GUI set to null
-		this(server, port, username, null);
-	}
-
-	/*
-	 * Constructor call when used from a GUI
-	 * in console mode the ClienGUI parameter is null
-	 */
-	SClient(String server, int port, String username, SClient cg) {
-		this.server = server;
-		this.port = port;
-		this.username = username;
-		// save if we are in GUI mode or not
-	//	this.cg = cg;
-	}
-	
-	/*
-	 * To start the dialog
-	 */
-	public boolean start() {
-		// try to connect to the server
-		try {
-			socket = new Socket(server, port);
-		} 
-		// if it failed not much I can so
-		catch(Exception ec) {
-			display("Error connectiong to server:" + ec);
-			return false;
-		}
-		
-		String msg = "Connection accepted " + socket.getInetAddress() + ":" + socket.getPort();
-		display(msg);
-	
-		/* Creating both Data Stream */
-		try
-		{
-			sInput  = new ObjectInputStream(socket.getInputStream());
-			sOutput = new ObjectOutputStream(socket.getOutputStream());
-		}
-		catch (IOException eIO) {
-			display("Exception creating new Input/output Streams: " + eIO);
-			return false;
-		}
-
-		// creates the Thread to listen from the server 
-		new ListenFromServer().start();
-		// Send our username to the server this is the only message that we
-		// will send as a String. All other messages will be ChatMessage objects
-		try
-		{
-			sOutput.writeObject(username);
-		}
-		catch (IOException eIO) {
-			display("Exception doing login : " + eIO);
-			disconnect();
-			return false;
-		}
-		// success we inform the caller that it worked
-		return true;
-	}
-
-	/*
-	 * To send a message to the console or the GUI
-	 */
-	private void display(String msg) {
-		if(cg == null)
-			System.out.println(msg);      // println in console mode
-		else
-			cg.append(msg + "\n");		// append to the ClientGUI JTextArea (or whatever)
-	}
-	
-	/*
-	 * To send a message to the server
-	 */
-	void sendMessage(ChatMessage msg) {
-		try {
-			sOutput.writeObject(msg);
-		}
-		catch(IOException e) {
-			display("Exception writing to server: " + e);
-		}
-	}
-
-	/*
-	 * When something goes wrong
-	 * Close the Input/Output streams and disconnect not much to do in the catch clause
-	 */
-	private void disconnect() {
-		try { 
-			if(sInput != null) sInput.close();
-		}
-		catch(Exception e) {} // not much else I can do
-		try {
-			if(sOutput != null) sOutput.close();
-		}
-		catch(Exception e) {} // not much else I can do
-        try{
-			if(socket != null) socket.close();
-		}
-		catch(Exception e) {} // not much else I can do
-		
-		// inform the GUI
-		if(cg != null)
-			cg.connectionFailed();
-			
-	}
-	
-	// called by the GUI is the connection failed
-		// we reset our buttons, label, textfield
-		public void connectionFailed() {
-			System.out.println("// connection failed");
-//			login.setEnabled(true);
-//			logout.setEnabled(false);
-//			whoIsIn.setEnabled(false);
-//			label.setText("Enter your username below");
-//			tf.setText("Anonymous");
-//			// reset port number and host name as a construction time
-//			tfPort.setText("" + defaultPort);
-//			tfServer.setText(defaultHost);
-//			// let the user change them
-//			tfServer.setEditable(false);
-//			tfPort.setEditable(false);
-//			// don't react to a <CR> after the username
-//			tf.removeActionListener(this);
-//			connected = false;
-		}
-		
-	/*
-	 * To start the Client in console mode use one of the following command
-	 * > java Client
-	 * > java Client username
-	 * > java Client username portNumber
-	 * > java Client username portNumber serverAddress
-	 * at the console prompt
-	 * If the portNumber is not specified 1500 is used
-	 * If the serverAddress is not specified "localHost" is used
-	 * If the username is not specified "Anonymous" is used
-	 * > java Client 
-	 * is equivalent to
-	 * > java Client Anonymous 1500 localhost 
-	 * are eqquivalent
-	 * 
-	 * In console mode, if an error occurs the program simply stops
-	 * when a GUI id used, the GUI is informed of the disconnection
-	 */
-
-
-	/*
-	 * a class that waits for the message from the server and append them to the JTextArea
-	 * if we have a GUI or simply System.out.println() it in console mode
-	 */
-	class ListenFromServer extends Thread {
-
-		public void run() {
-			while(true) {
-				try {
-					String msg = (String) sInput.readObject();
-					// if console mode print the message and add back the prompt
-					if(cg == null) {
-						System.out.println(msg);
-						System.out.print("> ");
-					}
-					else {
-						cg.append(msg);
-					}
-				}
-				catch(IOException e) {
-					display("Server has close the connection: " + e);
-					if(cg != null) 
-						cg.connectionFailed();
-					break;
-				}
-				// can't happen with a String object but need the catch anyhow
-				catch(ClassNotFoundException e2) {
-				}
-			}
-		}
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	//////////////////////////////////////
+	private Client client;
 	/**
 	 * 
 	 */
@@ -307,7 +79,7 @@ public class SClient extends javax.swing.JFrame implements Serializable  {
 
 		jLabel_address.setText("address:");
 
-		ip_ad.setText("localhost");
+		ip_ad.setText("127.0.0.1");
 		ip_ad.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				ip_adActionPerformed(evt);
@@ -487,45 +259,38 @@ public class SClient extends javax.swing.JFrame implements Serializable  {
 	private void showonline(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SHOWONLINE
 		System.out.println("showonline botten clicked");
 
+		client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));	
+		
+		
+		
 	}//GEN-LAST:event_SHOWONLINE
 
 	private void Connect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Connect
-		System.out.println("connect button clicked");
-		
-	
+		//new SClient("localhost", 1500);
+
 		
 		// ok it is a connection request
-		String username = my_name.getText().trim();
-	
+		String username = my_name.getText();
 		// empty username ignore it
-		if(username.length() == 0) {
-			System.out.println("!??");
+		if(username.length() == 0)
 			return;
-		}
 		// empty serverAddress ignore it
 		String server = ip_ad.getText().trim();
-		if(server.length() == 0)
-			return;
+		//if(server.length() == 0)
+		//	return;
 		// empty or invalid port numer, ignore it
-		int portNumber = 1500;
-		if(portNumber == 0)
-			return;
-		int port = 0;
+		
+		int port = 1500;
 		try {
-			port = portNumber;
+			port = 1500;
 		}
 		catch(Exception en) {
 			return;   // nothing I can do if port number is not valid
 		}
 
 		// try creating a new Client with GUI
-		 client = new SClient(server, port, username, this);
-		// test if we can start the Client
-		if(!client.start()) {
-			System.out.println("error");
-			return;
+		client = new Client(server, port, username, this);
 		
-		}
 		my_name.setEditable(true);
 		message_field.setEditable(true);
 		
@@ -535,30 +300,29 @@ public class SClient extends javax.swing.JFrame implements Serializable  {
 		jToggleButton_connect.setEnabled(false);
 		message_field.setEnabled(true);
 		jButton_send.setEnabled(true);
+		jToggleButton_showOnline.setEnabled(true);
+		// test if we can start the Client
+		if(!client.start()) 
+			return;
+	
 		
-
-		
-		//dst.setEnabled(true);
-
 
 	}//GEN-LAST:event_Connect
 	
-	
 	// called by the Client to append text in the TextArea 
 		void append(String str) {
-			client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, str));
-			
-			jTextArea_Main.append(my_name.getText() +": " +  str + "\n");
-			message_field.setText("");
-		//	jTextArea_Main.setCaretPosition(message_field.getText().length() - 1);
+			jTextArea_Main.append(str);
+			jTextArea_Main.setCaretPosition(jTextArea_Main.getText().length() - 1);
 		}
-	private void Send(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Send
-		append(message_field.getText());
 		
+	private void Send(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Send
+			client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, message_field.getText()));				
+			append(message_field.getText());
+			message_field.setText("");
+
 	}//GEN-LAST:event_Send
 
 	private void Disconnect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Disconnect
-		System.out.println("Disconnect botten clicked");
 		client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
 		
 		jButton_disconnect.setEnabled(false);
@@ -566,57 +330,18 @@ public class SClient extends javax.swing.JFrame implements Serializable  {
 		message_field.setEnabled(false);
 		jButton_send.setEnabled(false);
 		my_name.setEnabled(true);
-
+		jToggleButton_showOnline.setEnabled(false);
+		
 	}//GEN-LAST:event_Disconnect
 
 	private void message_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_message_fieldActionPerformed
 		// TODO add your handling code here:
 	}//GEN-LAST:event_message_fieldActionPerformed
 
-	
-
-	
-	
 	/**
 	 * @param args the command line arguments
 	 */
 	public static void main(String args[]) {
-		
-		// default values
-		int portNumber = 1500;
-		String serverAddress = "localhost";
-		String userName = "Anonymous";
-
-		// depending of the number of arguments provided we fall through
-		switch(args.length) {
-			// > javac Client username portNumber serverAddr
-			case 3:
-				serverAddress = args[2];
-			// > javac Client username portNumber
-			case 2:
-				try {
-					portNumber = Integer.parseInt(args[1]);
-				}
-				catch(Exception e) {
-					System.out.println("Invalid port number.");
-					System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
-					return;
-				}
-			// > javac Client username
-			case 1: 
-				userName = args[0];
-			// > java Client
-			case 0:
-				break;
-			// invalid number of arguments
-			default:
-				System.out.println("Usage is: > java Client [username] [portNumber] {serverAddress]");
-			return;
-		}
-		
-		
-	//	new SClient("localhost", 1500);
-		
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
 		/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -630,13 +355,13 @@ public class SClient extends javax.swing.JFrame implements Serializable  {
 				}
 			}
 		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(SClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(SClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(SClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(SClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
 		//</editor-fold>
 
@@ -647,11 +372,7 @@ public class SClient extends javax.swing.JFrame implements Serializable  {
 			}
 		});
 	}
-//////////////////
-	
-	
-	
-	
+
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JTextField dst;
 	private javax.swing.JTextField ip_ad;
