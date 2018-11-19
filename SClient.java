@@ -77,8 +77,6 @@ public class SClient extends javax.swing.JFrame {
 
 		jLabel_name.setText("name:");
 
-		jLabel_address.setText("address:");
-
 		ip_ad.setText("127.0.0.1");
 		ip_ad.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -125,7 +123,7 @@ public class SClient extends javax.swing.JFrame {
 		jLabel_To.setText("TO:");
 
 		dst.setText("NAME");
-		dst.setEditable(false);
+		dst.setEditable(true);
 		dst.setToolTipText("");
 
 		message_field.setText("");
@@ -292,21 +290,18 @@ public class SClient extends javax.swing.JFrame {
 		client = new Client(server, port, username, this);
 		
 		my_name.setEditable(true);
-		message_field.setEditable(true);
-		
+		message_field.setEditable(true);			
 		
 		my_name.setEnabled(false);
 		jButton_disconnect.setEnabled(true);
 		jToggleButton_connect.setEnabled(false);
 		message_field.setEnabled(true);
 		jButton_send.setEnabled(true);
-		jToggleButton_showOnline.setEnabled(true);
+		jToggleButton_showOnline.setEnabled(true);;
 		// test if we can start the Client
 		if(!client.start()) 
 			return;
-	
 		
-
 	}//GEN-LAST:event_Connect
 	
 	// called by the Client to append text in the TextArea 
@@ -371,6 +366,10 @@ public class SClient extends javax.swing.JFrame {
 			}
 		});
 	}
+	
+	public String getValue() {
+		return dst.getText();
+	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JTextField dst;
@@ -389,4 +388,5 @@ public class SClient extends javax.swing.JFrame {
 	private javax.swing.JTextField message_field;
 	private javax.swing.JTextField my_name;
 	// End of variables declaration//GEN-END:variables
+
 }

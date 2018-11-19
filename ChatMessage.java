@@ -44,7 +44,7 @@ public class ChatMessage implements Serializable {
         this.type = type;
 
         this.message = message;
-
+        
     }
 
      

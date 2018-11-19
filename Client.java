@@ -16,11 +16,13 @@ public class Client  {
 	private Socket socket;
 
 	// if I use a GUI or not
-	private SClient cg;
-	
+	public SClient cg;
+
 	// the server, the port and the username
 	private String server, username;
 	private int port;
+	
+	public Server sg;
 
 	/*
 	 *  Constructor called by console mode
@@ -44,7 +46,7 @@ public class Client  {
 		// save if we are in GUI mode or not
 		this.cg = cg;
 	}
-	
+
 	/*
 	 * To start the dialog
 	 */
@@ -58,10 +60,10 @@ public class Client  {
 			display("Error connectiong to server:" + ec);
 			return false;
 		}
-		
+
 		String msg = "Connection accepted " + socket.getInetAddress() + ":" + socket.getPort();
 		display(msg);
-	
+
 		/* Creating both Data Stream */
 		try
 		{
@@ -79,7 +81,7 @@ public class Client  {
 		// will send as a String. All other messages will be ChatMessage objects
 		try
 		{
-			// כשמתחברים
+			//
 			sOutput.writeObject(username);
 		}
 		catch (IOException eIO) {
@@ -94,24 +96,27 @@ public class Client  {
 	/*
 	 * To send a message to the console or the GUI
 	 */
-	private void display(String msg) {
+	public void display(String msg) {
 		if(cg == null)
 			System.out.println(msg);      // println in console mode
 		else {
-			
+
 			cg.append(msg + "\n");		// append to the ClientGUI JTextArea (or whatever)
-	}}
-	
+		}}
+
 	/*
 	 * To send a message to the server
 	 */
 	void sendMessage(ChatMessage msg) {
 		try {
 			if (msg.getType() == 1) {
-			
+				
 			}
-			
-			sOutput.writeObject(msg);
+		/*	if(cg.getValue() == "NAME") {
+				String name = cg.getValue();
+				
+			} */
+					sOutput.writeObject(msg);
 		}
 		catch(IOException e) {
 			display("Exception writing to server: " + e);
@@ -131,17 +136,17 @@ public class Client  {
 			if(sOutput != null) sOutput.close();
 		}
 		catch(Exception e) {} // not much else I can do
-        try{
+		try{
 			if(socket != null) socket.close();
 		}
 		catch(Exception e) {} // not much else I can do
-		
+
 		// inform the GUI
 		if(cg != null) {
-		//	cg.connectionFailed();
+			//	cg.connectionFailed();
 			System.out.println("err 22342");
-			
-	}}
+
+		}}
 	/*
 	 * To start the Client in console mode use one of the following command
 	 * > java Client
@@ -164,32 +169,32 @@ public class Client  {
 		// default values
 		int portNumber = 1500;
 		String serverAddress = "localhost";
-		String userName = "Anonymous";
+		String userName = "Name";
 
 		// depending of the number of arguments provided we fall through
 		switch(args.length) {
-			// > javac Client username portNumber serverAddr
-			case 3:
-				serverAddress = args[2];
+		// > javac Client username portNumber serverAddr
+		case 3:
+			serverAddress = args[2];
 			// > javac Client username portNumber
-			case 2:
-				try {
-					portNumber = Integer.parseInt(args[1]);
-				}
-				catch(Exception e) {
-					System.out.println("Invalid port number.");
-					System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
-					return;
-				}
+		case 2:
+			try {
+				portNumber = Integer.parseInt(args[1]);
+			}
+			catch(Exception e) {
+				System.out.println("Invalid port number.");
+				System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
+				return;
+			}
 			// > javac Client username
-			case 1: 
-				userName = args[0];
+		case 1: 
+			userName = args[0];
 			// > java Client
-			case 0:
-				break;
+		case 0:
+			break;
 			// invalid number of arguments
-			default:
-				System.out.println("Usage is: > java Client [username] [portNumber] {serverAddress]");
+		default:
+			System.out.println("Usage is: > java Client [username] [portNumber] {serverAddress]");
 			return;
 		}
 		// create the Client object
@@ -198,7 +203,7 @@ public class Client  {
 		// if it failed nothing we can do
 		if(!client.start())
 			return;
-		
+
 		// wait for messages from user
 		Scanner scan = new Scanner(System.in);
 		// loop forever for message from the user
@@ -240,15 +245,15 @@ public class Client  {
 						System.out.print("> ");
 					}
 					else {
-						//  כששולחים הודעה
+						// 
 						cg.append(msg);
 					}
 				}
 				catch(IOException e) {
 					display("Server has close the connection");
 					if(cg != null) 
-					//	cg.connectionFailed();
-					break;
+						//	cg.connectionFailed();
+						break;
 				}
 				// can't happen with a String object but need the catch anyhow
 				catch(ClassNotFoundException e2) {

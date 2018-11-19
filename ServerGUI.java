@@ -329,7 +329,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 				sInput  = new ObjectInputStream(socket.getInputStream());
 				// read the username
 				username = (String) sInput.readObject();
-				display(username + " just connected.");
+				broadcast(username + " just connected.");
 			}
 			catch (IOException e) {
 				display("Exception creating new Input/output Streams: " + e);
@@ -405,7 +405,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 					broadcast(username + ": " + message);
 					break;
 				case ChatMessage.LOGOUT:
-					display(username + " disconnected with a LOGOUT message.");
+					broadcast(username + " disconnected.");
 					keepGoing = false;
 					break;
 				case ChatMessage.WHOISIN:
