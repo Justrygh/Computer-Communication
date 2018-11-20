@@ -17,12 +17,12 @@ public class Client  {
 
 	// if I use a GUI or not
 	public SClient cg;
+	public Client ct;
 
 	// the server, the port and the username
 	private String server, username;
 	private int port;
 	
-	public Server sg;
 
 	/*
 	 *  Constructor called by console mode
@@ -112,10 +112,6 @@ public class Client  {
 			if (msg.getType() == 1) {
 				
 			}
-		/*	if(cg.getValue() == "NAME") {
-				String name = cg.getValue();
-				
-			} */
 					sOutput.writeObject(msg);
 		}
 		catch(IOException e) {

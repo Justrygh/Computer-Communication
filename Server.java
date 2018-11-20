@@ -125,7 +125,7 @@ public class Server {
 		if(sg == null)
 			System.out.print(messageLf);
 		else
-			sg.appendRoom(messageLf);     // append in the room window
+		//	sg.appendRoom(messageLf);     // append in the room window
 
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
@@ -226,7 +226,7 @@ public class Server {
 				return;
 			}
 			// have to catch ClassNotFoundException
-			// but I read a String, I am sure it will work
+			// but I read a String, 	public ServerGUI sg;I am sure it will work
 			catch (ClassNotFoundException e) {
 			}
 			date = new Date().toString() + "\n";
@@ -281,15 +281,6 @@ public class Server {
 			close();
 		}
 
-		public Socket mySocket(String name) {
-			for(int i = 0; i < al.size(); ++i) {
-				ClientThread ct = al.get(i);
-				if(ct.username == name) {
-					return ct.socket;
-				}
-			}
-			return null;
-		}
 
 		// try to close everything
 		private void close() {
