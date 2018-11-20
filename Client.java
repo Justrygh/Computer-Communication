@@ -63,6 +63,7 @@ public class Client  {
 
 		String msg = "Connection accepted " + socket.getInetAddress() + ":" + socket.getPort();
 		display(msg);
+		display("\nIn order to send another client a message \ntype $name at the end of the message");
 
 		/* Creating both Data Stream */
 		try

@@ -120,10 +120,10 @@ public class SClient extends javax.swing.JFrame {
 		jTextArea_Main.setRows(5);
 		jScrollPane1.setViewportView(jTextArea_Main);
 
-		jLabel_To.setText("TO:");
+		jLabel_To.setText("");
 
-		dst.setText("NAME");
-		dst.setEditable(true);
+		dst.setText("MSG:");
+		dst.setEditable(false);
 		dst.setToolTipText("");
 
 		message_field.setText("");
