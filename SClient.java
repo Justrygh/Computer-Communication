@@ -6,12 +6,13 @@
 package Codes;
 
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import javax.swing.GroupLayout;
 
 /**
- * @authors eli & yoni
+ *   @authors eli & yoni
  */
 public class SClient extends javax.swing.JFrame {
 	// the Client object
@@ -47,7 +48,7 @@ public class SClient extends javax.swing.JFrame {
 		jToggleButton_clear = new javax.swing.JToggleButton();
 		jToggleButton_reset = new javax.swing.JToggleButton();
 		jScrollPane1 = new javax.swing.JScrollPane();
-		jTextArea_Main = new javax.swing.JTextArea("");
+		jTextArea_Main = new javax.swing.JTextArea("Welcome. Protocol Menu:\n1. Type <connect><USERNAME>  to connect to the chat\n2. Type <disconnect> to disconnect from the chat\n3. Type <get_users> to see who is connected\n4. Type <set_msg_all><MSG> to send a msg to everyone\n5. Type <set_msg><NAME><MSG> to send a msg to someone\n-----------------------------\n ");
 		jLabel_To = new javax.swing.JLabel();
 		dst = new javax.swing.JTextField();
 		message_field = new javax.swing.JTextField("");
@@ -120,14 +121,14 @@ public class SClient extends javax.swing.JFrame {
 		jTextArea_Main.setRows(5);
 		jScrollPane1.setViewportView(jTextArea_Main);
 
-		jLabel_To.setText("");
+		jLabel_To.setText("TO:");
 
-		dst.setText("MSG:");
-		dst.setEditable(false);
+		dst.setText("NAME");
+		dst.setEditable(true);
 		dst.setToolTipText("");
 
 		message_field.setText("");
-		message_field.setEditable(false);
+		message_field.setEditable(true);
 		message_field.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				message_fieldActionPerformed(evt);
@@ -135,7 +136,7 @@ public class SClient extends javax.swing.JFrame {
 		});
 
 		jButton_send.setText("Send");
-		jButton_send.setEnabled(false);
+		jButton_send.setEnabled(true);
 		jButton_send.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mousePressed(java.awt.event.MouseEvent evt) {
 				Send(evt);
@@ -253,20 +254,19 @@ public class SClient extends javax.swing.JFrame {
 		game.setVisible(true);
 	}//GEN-LAST:event_Reset
 
+private void _show() {
+	System.out.println("showonline botten clicked");
 
+	client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));	
+	
+}
 	private void showonline(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SHOWONLINE
-		System.out.println("showonline botten clicked");
-
-		client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));	
-		
+	_show();
 		
 		
 	}//GEN-LAST:event_SHOWONLINE
+	private void con() {
 
-	private void Connect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Connect
-		//new SClient("localhost", 1500);
-
-		
 		// ok it is a connection request
 		String username = my_name.getText();
 		// empty username ignore it
@@ -301,6 +301,11 @@ public class SClient extends javax.swing.JFrame {
 		// test if we can start the Client
 		if(!client.start()) 
 			return;
+	}
+	private void Connect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Connect
+		//new SClient("localhost", 1500);
+
+		con();
 		
 	}//GEN-LAST:event_Connect
 	
@@ -311,20 +316,93 @@ public class SClient extends javax.swing.JFrame {
 		}
 		
 	private void Send(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Send
+		String action = "";
+		try {
+		if (message_field.getText().contains("<") == true && message_field.getText().contains(">") == true) {
+			
+			action = message_field.getText().substring(message_field.getText().indexOf('<')+1, message_field.getText().indexOf('>'));
+			
+			if (action.equals("connect")) {
+				if (jButton_disconnect.isEnabled()==true) 	{jTextArea_Main.append("System: You're already conencted to the server.\n");return;}
+				String nickname = message_field.getText().substring( message_field.getText().indexOf('>')+2 , message_field.getText().length()-1);
+				my_name.setText(nickname);
+				
+				con();
+				message_field.setText("");
+
+				return;
+			}else if(action.equals("get_users")) {
+				if (jToggleButton_connect.isEnabled()==true) 	{jTextArea_Main.append("System: You're not conencted to the server.\n");return;}
+				_show();
+				message_field.setText("");
+
+			}else if(action.equals("disconnect")) {
+				if (jToggleButton_connect.isEnabled()==true) 	{jTextArea_Main.append("System: You're not conencted to the server.\n");return;}
+
+				dis();
+				message_field.setText("");
+
+				return;
+			}
+			else if (action.equals("set_msg_all")) {
+				if (jToggleButton_connect.isEnabled()==true) 	{jTextArea_Main.append("System: You're not conencted to the server.\n");return;}
+				String msg = message_field.getText().substring( message_field.getText().indexOf('>')+2 , message_field.getText().length()-1);
+				client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg));
+				message_field.setText("");
+
+				return;
+
+			}
+			if (action.equals("set_msg")){
+				int index = message_field.getText().indexOf('>',  message_field.getText().indexOf('>')+1);
+				String name = message_field.getText().substring( message_field.getText().indexOf('>')+2 , message_field.getText().indexOf('>',  message_field.getText().indexOf('>')+1));
+				String msg = message_field.getText().substring(index+2, message_field.getText().length()-1);
+						System.out.println(name);
+						System.out.println(msg);
+				 message_field.setText(msg + "#" +name);
+					client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, message_field.getText()));				
+
+				message_field.setText("");
+
+				return;
+
+			}
+			else {
+				jTextArea_Main.append("System: this option does not exist\n");
+			}
+
+			return;
+		}
+		
+		}
+		catch(Exception e) {
+			jTextArea_Main.append("System: Something went wrong. Please check your syntax.\n");
+			return;
+		}
+
+		if (dst.getText().equals("NAME") == false)
+		 message_field.setText(message_field.getText() + "`" + dst.getText());
+	//	else
+		//	message_field.setText(message_field.getText());	
+			
+		
 			client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, message_field.getText()));				
 			message_field.setText("");
 
 	}//GEN-LAST:event_Send
 
+		private void dis() {
+			client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
+			
+			jButton_disconnect.setEnabled(false);
+			jToggleButton_connect.setEnabled(true);
+			//message_field.setEnabled(false);
+			//jButton_send.setEnabled(false);
+			my_name.setEnabled(true);
+			jToggleButton_showOnline.setEnabled(false);
+		}
 	private void Disconnect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Disconnect
-		client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
-		
-		jButton_disconnect.setEnabled(false);
-		jToggleButton_connect.setEnabled(true);
-		message_field.setEnabled(false);
-		jButton_send.setEnabled(false);
-		my_name.setEnabled(true);
-		jToggleButton_showOnline.setEnabled(false);
+		dis();
 		
 	}//GEN-LAST:event_Disconnect
 
@@ -336,6 +414,7 @@ public class SClient extends javax.swing.JFrame {
 	 * @param args the command line arguments
 	 */
 	public static void main(String args[]) {
+		
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
 		/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -345,6 +424,7 @@ public class SClient extends javax.swing.JFrame {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
 					javax.swing.UIManager.setLookAndFeel(info.getClassName());
+					
 					break;
 				}
 			}
@@ -358,13 +438,17 @@ public class SClient extends javax.swing.JFrame {
 			java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
 		//</editor-fold>
-
+		
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				new SClient().setVisible(true);
 			}
 		});
+		
+		
+
+		
 	}
 	
 	public String getValue() {
@@ -385,7 +469,7 @@ public class SClient extends javax.swing.JFrame {
 	private javax.swing.JToggleButton jToggleButton_showOnline;
 	private javax.swing.JToggleButton jToggleButton_clear;
 	private javax.swing.JToggleButton jToggleButton_reset;
-	private javax.swing.JTextField message_field;
+	private  javax.swing.JTextField message_field;
 	private javax.swing.JTextField my_name;
 	// End of variables declaration//GEN-END:variables
 
