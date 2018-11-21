@@ -1,9 +1,8 @@
 package Codes;
 import java.net.*;
+
 import java.io.*;
 import java.util.*;
-
-import Codes.Server.ClientThread;
 
 /*
  * The Client that can be run both as a console or a GUI
@@ -63,7 +62,7 @@ public class Client  {
 
 		String msg = "Connection accepted " + socket.getInetAddress() + ":" + socket.getPort();
 		display(msg);
-		display("\nIn order to send another client a message \ntype $name at the end of the message");
+		display("\nIn order to send another client a message \ntype #name at the end of the message");
 
 		/* Creating both Data Stream */
 		try

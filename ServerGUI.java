@@ -2,8 +2,8 @@ package Codes;
 
 import javax.swing.*;
 
+
 import Codes.ChatMessage;
-import Codes.Server.ClientThread;
 
 //import Codes.Server.ClientThread;
 
@@ -317,7 +317,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		// the date I connect
 		String date;
 
-		// Constructore
+		// Constructor
 		ClientThread(Socket socket) {
 			// a unique id
 			id = ++uniqueId;
@@ -374,9 +374,10 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 
 			// we loop in reverse order in case we would have to remove a Client
 			// because it has disconnected
-			if(messageLf.indexOf('$') !=-1) {
-				String toSend = messageLf.substring(messageLf.indexOf('$')+1,messageLf.length()-1);
-				messageLf = messageLf.substring(0, messageLf.indexOf('$'));
+			if(messageLf.indexOf('#') !=-1) {
+				String toSend = messageLf.substring(messageLf.indexOf('#')+1,messageLf.length()-1);
+				messageLf = messageLf.substring(0, messageLf.indexOf('#'));
+				messageLf = messageLf + "\n";
 				for(int i = al.size(); --i >= 0;) {
 					ClientThread ct = al.get(i);
 					if(ct.username.equals(toSend) || ct.username.equals(user)) {
@@ -478,66 +479,4 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			return true;
 		}
 	}
-
-	///////////////////////////chat msg
-
-
-
-
-
-	//protected static final long serialVersionUID = 1112122200L;
-
-
-
-	// The different types of message sent by the Client
-
-	// WHOISIN to receive the list of the users connected
-
-	// MESSAGE an ordinary message
-
-	// LOGOUT to disconnect from the Server
-
-	public static final int WHOISIN = 0;
-
-
-
-	public static final int MESSAGE = 1;
-
-
-
-	public static final int LOGOUT = 2;
-
-	private int type;
-
-	private String message;
-
-
-
-	// constructor
-
-	public void ChatMessage(int type, String message) {
-
-		this.type = type;
-
-		this.message = message;
-
-	}
-
-
-
-	// getters
-
-	/*  public int getType() {
-
-        return type;
-
-    }*/
-
-	public String getMessage() {
-
-		return message;
-
-	}
-
 }
-
