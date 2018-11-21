@@ -2,8 +2,8 @@ package Codes;
 
 import javax.swing.*;
 
-
 import Codes.ChatMessage;
+//import Codes.Server.ClientThread;
 
 //import Codes.Server.ClientThread;
 
@@ -151,7 +151,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			appendEvent("Invalid port number");
 			return;
 		}
-		// ceate a new Server
+		// create a new Server
 
 		if (stopStart.isEnabled() == true) {
 
@@ -275,6 +275,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 	 */
 	class ServerRunning extends Thread {
 		public void run() {
+
 			server.start();         // should execute until if fails
 			// the server failed
 			stopStart.setText("Start");
@@ -317,7 +318,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		// the date I connect
 		String date;
 
-		// Constructor
+		// Constructore
 		ClientThread(Socket socket) {
 			// a unique id
 			id = ++uniqueId;
@@ -331,7 +332,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 				sInput  = new ObjectInputStream(socket.getInputStream());
 				// read the username
 				username = (String) sInput.readObject();
-				broadcast(username + " just connected.");
+				broadcast("system:" +username + " just connected.");
 			}
 			catch (IOException e) {
 				display("Exception creating new Input/output Streams: " + e);
@@ -358,14 +359,14 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			}
 		}
 		/*
-		 *  to broadcast a message to all Clients
-		 *  or to a specific client using #"name".
+		 *  to broadcast a message to all Clients or to a specific client using #"name".
 		 */
 		private synchronized void broadcast(String message) {
 			// add HH:mm:ss and \n to the message
 			String time = sdf.format(new Date());
 			String messageLf = time + " " + message + "\n";
 			String user = username;
+
 			// display message on console or GUI
 			if(sg == null)
 				System.out.print(messageLf);
@@ -373,27 +374,50 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 
 				sg.appendRoom(messageLf);     // append in the room window
 
-			if(messageLf.indexOf('#') !=-1) {
-				String toSend = messageLf.substring(messageLf.indexOf('#')+1,messageLf.length()-1); // 
-				messageLf = messageLf.substring(0, messageLf.indexOf('#'));
-				messageLf = messageLf + "\n";
+			// we loop in reverse order in case we would have to remove a Client
+			// because it has disconnected
+			boolean entered=false;
+			if(messageLf.contains("#") == true) {
 				
-				// we loop in reverse order in case we would have to remove a Client
-				// because it has disconnected
+				String _msg_Tosend[] = messageLf.split("#");
+				messageLf = _msg_Tosend[0];
+							
+				int myIndex=0;
+				_msg_Tosend[1] = _msg_Tosend[1].replaceAll("\n","");
+				messageLf = messageLf.replaceAll("\n","");
+				boolean isSend = false;
+				
+				
 				for(int i = al.size(); --i >= 0;) {
+					
 					ClientThread ct = al.get(i);
-					if(ct.username.equals(toSend) || ct.username.equals(user)) { // In order to send a private message.
-						ct.writeMsg(messageLf);
+					
+				
+					if(ct.username.equals(_msg_Tosend[1].substring(0, _msg_Tosend[1].length())) ) {
+				
+						ct.writeMsg("<msg_lst><num_of_msgs>  "+ user + ": " +  messageLf + "<end>\n");
+						isSend=true;
 					}
+					
+					if (ct.username.equals(user)) {
+						ct.writeMsg("System: PM To  "+ user + ":\n>" +  _msg_Tosend[0] + "\n");
+					}
+
+
+	
 				}
+				
+				return;
 			}
+			
+			
 			else {
 				for(int i = al.size(); --i >= 0;) {
 					ClientThread ct = al.get(i);
 					// try to write to the Client if it fails remove it from the list
 					if(!ct.writeMsg(messageLf)) {
 						al.remove(i);
-						display("Disconnected Client " + ct.username + " removed from list.");
+						display("Systme: Disconnected Client " + ct.username + " removed from list.");
 					}
 				}
 			}
@@ -421,19 +445,23 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 				switch(cm.getType()) {
 
 				case ChatMessage.MESSAGE:
-					broadcast(username + ": " + message);
+				
+						broadcast(username + ": " + message);			
+						
+
 					break;
 				case ChatMessage.LOGOUT:
-					broadcast(username + " disconnected.");
+					broadcast("system: " +username + " disconnected.");
 					keepGoing = false;
 					break;
 				case ChatMessage.WHOISIN:
-					writeMsg("List of the users connected at " + sdf.format(new Date()) + "\n");
+					writeMsg("System: <users_lst><num_of_users>");
 					// scan al the users connected
 					for(int i = 0; i < al.size(); ++i) {
 						ClientThread ct = al.get(i);
 						writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
 					}
+					writeMsg("<end>\n");
 					break;
 				}
 			}
@@ -481,4 +509,66 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			return true;
 		}
 	}
+
+	///////////////////////////chat msg
+
+
+
+
+
+	//protected static final long serialVersionUID = 1112122200L;
+
+
+
+	// The different types of message sent by the Client
+
+	// WHOISIN to receive the list of the users connected
+
+	// MESSAGE an ordinary message
+
+	// LOGOUT to disconnect from the Server
+
+	public static final int WHOISIN = 0;
+
+
+
+	public static final int MESSAGE = 1;
+
+
+
+	public static final int LOGOUT = 2;
+
+	private int type;
+
+	private String message;
+
+
+
+	// constructor
+
+	public void ChatMessage(int type, String message) {
+
+		this.type = type;
+
+		this.message = message;
+
+	}
+
+
+
+	// getters
+
+	/*  public int getType() {
+
+        return type;
+
+    }*/
+
+	public String getMessage() {
+
+		return message;
+
+	}
+
 }
+
