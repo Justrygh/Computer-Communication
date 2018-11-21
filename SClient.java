@@ -359,7 +359,7 @@ private void _show() {
 				String msg = message_field.getText().substring(index+2, message_field.getText().length()-1);
 						System.out.println(name);
 						System.out.println(msg);
-				 message_field.setText(msg + "#" +name);
+				 message_field.setText(msg + "`" +name);
 					client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, message_field.getText()));				
 
 				message_field.setText("");
