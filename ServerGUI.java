@@ -3,6 +3,7 @@ package Codes;
 import javax.swing.*;
 
 import Codes.ChatMessage;
+//import Codes.Server.ClientThread;
 
 //import Codes.Server.ClientThread;
 
@@ -21,8 +22,8 @@ import java.io.*;
  * The server as a GUI
  */
 public class ServerGUI extends JFrame implements ActionListener, WindowListener {
-	
-	
+
+
 	// a unique ID for each connection
 	private static int uniqueId;
 	// an ArrayList to keep the list of the Client
@@ -35,7 +36,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 	private int port;
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
-	
+
 	private static final long serialVersionUID = 1L;
 	// the stop and start buttons
 	private JButton stopStart; private JButton stop;
@@ -45,19 +46,19 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 	private JTextField tPortNumber;
 	// my server
 	private ServerGUI server;
-	
+
 	/*
 	 *  server constructor that receive the port to listen to for connection as parameter
 	 *  in console
 	 */
-	
+
 	/*
 	 *  server constructor that receive the port to listen to for connection as parameter
 	 *  in console
 	 */
-	
-	
-	
+
+
+
 	public ServerGUI(int port, ServerGUI sg) {
 		// GUI or not
 		this.sg = sg;
@@ -68,8 +69,8 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		// ArrayList for the Client list
 		al = new ArrayList<ClientThread>();
 	}
-	
-	
+
+
 	// server constructor that receive the port to listen to for connection as parameter
 	ServerGUI(int port) {
 		this(port, null);
@@ -84,19 +85,19 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		stopStart.addActionListener(this);
 		north.add(stopStart);
 		add(north, BorderLayout.NORTH);
-		
-		   north.add(new JLabel("                                                    Server                                                                               "));
-			tPortNumber = new JTextField("  " + port);
-			north.add(tPortNumber);
-			tPortNumber.setVisible(false);
-		
+
+		north.add(new JLabel("                                                    Server                                                                               "));
+		tPortNumber = new JTextField("  " + port);
+		north.add(tPortNumber);
+		tPortNumber.setVisible(false);
+
 		stop = new JButton("stop");
 		stop.setEnabled(false);
 		stop.addActionListener(this);
 		north.add(stop);
 		add(north, BorderLayout.NORTH);
-		
-		
+
+
 		// the event and chat room
 		JPanel center = new JPanel(new GridLayout(2,1));
 		chat = new JTextArea(80,80);
@@ -109,7 +110,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		appendEvent("Events log.\n");
 		center.add(new JScrollPane(event));	
 		add(center);
-		
+
 		// need to be informed when the user click the close button on the frame
 		addWindowListener(this);
 		setSize(600, 600);
@@ -124,15 +125,15 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 	}
 	public void appendEvent(String str) {
 		event.append(str);
-	//	event.setCaretPosition(chat.getText().length() - 1);
-		
+		//	event.setCaretPosition(chat.getText().length() - 1);
+
 	}
-	
+
 	// start or stop where clicked
 	public void actionPerformed(ActionEvent e) {
 		// if running we have to stop
 		if(server != null) {
-			
+
 			server.stop();
 			server = null;
 			tPortNumber.setEditable(true);
@@ -141,7 +142,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			stopStart.setEnabled(true);
 			return;
 		}
-      	// OK start the server	
+		// OK start the server	
 		int port;
 		try {
 			port = Integer.parseInt(tPortNumber.getText().trim());
@@ -150,21 +151,21 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			appendEvent("Invalid port number");
 			return;
 		}
-		// ceate a new Server
-		
+		// create a new Server
+
 		if (stopStart.isEnabled() == true) {
-		
-		server = new ServerGUI(port, this);
-		// and start it as a thread
-		new ServerRunning().start();
-		stopStart.setEnabled(false);
-		
-		stop.setEnabled(true);
-		tPortNumber.setEditable(false);
+
+			server = new ServerGUI(port, this);
+			// and start it as a thread
+			new ServerRunning().start();
+			stopStart.setEnabled(false);
+
+			stop.setEnabled(true);
+			tPortNumber.setEditable(false);
 		}
 		else {
 			System.out.println("?");
-			
+
 		}
 	}
 	public void start() {
@@ -180,7 +181,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			{
 				// format message saying we are waiting
 				display("Server waiting for Clients on port " + port + ".");
-				
+
 				Socket socket = serverSocket.accept();  	// accept connection
 				// if I was asked to stop
 				if(!keepGoing)
@@ -195,9 +196,9 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 				for(int i = 0; i < al.size(); ++i) {
 					ClientThread tc = al.get(i);
 					try {
-					tc.sInput.close();
-					tc.sOutput.close();
-					tc.socket.close();
+						tc.sInput.close();
+						tc.sOutput.close();
+						tc.socket.close();
 					}
 					catch(IOException ioE) {
 						// not much I can do
@@ -210,13 +211,14 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		}
 		// something went bad
 		catch (IOException e) {
-            String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
+			String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
 			display(msg);
 		}
 	}		
-    /*
-     * For the GUI to stop the server
-     */
+	/*
+	 * For the GUI to stop the server
+	 */
+
 	protected void stop() {
 		keepGoing = false;
 		// connect to myself as Client to exit statement 
@@ -260,19 +262,20 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 	public void windowActivated(WindowEvent e) {}
 	public void windowDeactivated(WindowEvent e) {}
 
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	/*
 	 * A thread to run the Server
 	 */
 	class ServerRunning extends Thread {
 		public void run() {
+
 			server.start();         // should execute until if fails
 			// the server failed
 			stopStart.setText("Start");
@@ -282,13 +285,13 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		}
 	}
 
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	/*
 	 * Display an event (not a message) to the console or the GUI
 	 */
@@ -329,7 +332,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 				sInput  = new ObjectInputStream(socket.getInputStream());
 				// read the username
 				username = (String) sInput.readObject();
-				display(username + " just connected.");
+				broadcast("system:" +username + " just connected.");
 			}
 			catch (IOException e) {
 				display("Exception creating new Input/output Streams: " + e);
@@ -339,10 +342,10 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			// but I read a String, I am sure it will work
 			catch (ClassNotFoundException e) {
 			}
-            date = new Date().toString() + "\n";
+			date = new Date().toString() + "\n";
 		}
-		
-		
+
+
 		// for a client who logoff using the LOGOUT message
 		synchronized void remove(int id) {
 			// scan the array list until we found the Id
@@ -356,26 +359,66 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			}
 		}
 		/*
-		 *  to broadcast a message to all Clients
+		 *  to broadcast a message to all Clients 
 		 */
 		private synchronized void broadcast(String message) {
 			// add HH:mm:ss and \n to the message
 			String time = sdf.format(new Date());
 			String messageLf = time + " " + message + "\n";
+			String user = username;
+
 			// display message on console or GUI
 			if(sg == null)
 				System.out.print(messageLf);
 			else
+
 				sg.appendRoom(messageLf);     // append in the room window
-			
+
 			// we loop in reverse order in case we would have to remove a Client
 			// because it has disconnected
-			for(int i = al.size(); --i >= 0;) {
-				ClientThread ct = al.get(i);
-				// try to write to the Client if it fails remove it from the list
-				if(!ct.writeMsg(messageLf)) {
-					al.remove(i);
-					display("Disconnected Client " + ct.username + " removed from list.");
+			boolean entered=false;
+			if(messageLf.contains("`") == true) {
+				
+				String _msg_Tosend[] = messageLf.split("`");
+				messageLf = _msg_Tosend[0];
+							
+				int myIndex=0;
+				_msg_Tosend[1] = _msg_Tosend[1].replaceAll("\n","");
+				messageLf = messageLf.replaceAll("\n","");
+				boolean isSend = false;
+				
+				
+				for(int i = al.size(); --i >= 0;) {
+					
+					ClientThread ct = al.get(i);
+					
+				
+					if(ct.username.equals(_msg_Tosend[1].substring(0, _msg_Tosend[1].length())) ) {
+						ct.writeMsg("<PM> " +  messageLf +"\n" );
+						ct.writeMsg("<msg_lst><num_of_msgs>  "+ user + ": " +  messageLf + "<end>\n");
+						isSend=true;
+					}
+					
+					if (ct.username.equals(user)) {
+						ct.writeMsg("System: PM To  "+ user + ":\n>" +  _msg_Tosend[0] + "\n");
+					}
+
+
+	
+				}
+				
+				return;
+			}
+			
+			
+			else {
+				for(int i = al.size(); --i >= 0;) {
+					ClientThread ct = al.get(i);
+					// try to write to the Client if it fails remove it from the list
+					if(!ct.writeMsg(messageLf)) {
+						al.remove(i);
+						display("Systme: Disconnected Client " + ct.username + " removed from list.");
+					}
 				}
 			}
 		}
@@ -402,19 +445,23 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 				switch(cm.getType()) {
 
 				case ChatMessage.MESSAGE:
-					broadcast(username + ": " + message);
+				
+						broadcast(username + ": " + message);			
+						
+
 					break;
 				case ChatMessage.LOGOUT:
-					display(username + " disconnected with a LOGOUT message.");
+					broadcast("system: " +username + " disconnected.");
 					keepGoing = false;
 					break;
 				case ChatMessage.WHOISIN:
-					writeMsg("List of the users connected at " + sdf.format(new Date()) + "\n");
+					writeMsg("System: <users_lst><num_of_users>");
 					// scan al the users connected
 					for(int i = 0; i < al.size(); ++i) {
 						ClientThread ct = al.get(i);
 						writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
 					}
+					writeMsg("<end>\n");
 					break;
 				}
 			}
@@ -423,7 +470,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			remove(id);
 			close();
 		}
-		
+
 		// try to close everything
 		private void close() {
 			// try to close the connection
@@ -444,7 +491,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		/*
 		 * Write a String to the Client output stream
 		 */
-		private boolean writeMsg(String msg) {
+		public boolean writeMsg(String msg) {
 			// if Client is still connected send the message to it
 			if(!socket.isConnected()) {
 				close();
@@ -462,26 +509,26 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 			return true;
 		}
 	}
-	
+
 	///////////////////////////chat msg
-	
-	
 
-	 
 
-    //protected static final long serialVersionUID = 1112122200L;
 
- 
 
-    // The different types of message sent by the Client
 
-    // WHOISIN to receive the list of the users connected
+	//protected static final long serialVersionUID = 1112122200L;
 
-    // MESSAGE an ordinary message
 
-    // LOGOUT to disconnect from the Server
 
-    public static final int WHOISIN = 0;
+	// The different types of message sent by the Client
+
+	// WHOISIN to receive the list of the users connected
+
+	// MESSAGE an ordinary message
+
+	// LOGOUT to disconnect from the Server
+
+	public static final int WHOISIN = 0;
 
 
 
@@ -491,37 +538,37 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 
 	public static final int LOGOUT = 2;
 
-    private int type;
+	private int type;
 
-    private String message;
+	private String message;
 
-     
 
-    // constructor
 
-    public void ChatMessage(int type, String message) {
+	// constructor
 
-        this.type = type;
+	public void ChatMessage(int type, String message) {
 
-        this.message = message;
+		this.type = type;
 
-    }
+		this.message = message;
 
-     
+	}
 
-    // getters
 
-  /*  public int getType() {
+
+	// getters
+
+	/*  public int getType() {
 
         return type;
 
     }*/
 
-    public String getMessage() {
+	public String getMessage() {
 
-        return message;
+		return message;
 
-    }
-	
+	}
+
 }
 
