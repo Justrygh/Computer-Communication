@@ -359,6 +359,7 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 		}
 		/*
 		 *  to broadcast a message to all Clients
+		 *  or to a specific client using #"name".
 		 */
 		private synchronized void broadcast(String message) {
 			// add HH:mm:ss and \n to the message
@@ -372,15 +373,16 @@ public class ServerGUI extends JFrame implements ActionListener, WindowListener 
 
 				sg.appendRoom(messageLf);     // append in the room window
 
-			// we loop in reverse order in case we would have to remove a Client
-			// because it has disconnected
 			if(messageLf.indexOf('#') !=-1) {
-				String toSend = messageLf.substring(messageLf.indexOf('#')+1,messageLf.length()-1);
+				String toSend = messageLf.substring(messageLf.indexOf('#')+1,messageLf.length()-1); // 
 				messageLf = messageLf.substring(0, messageLf.indexOf('#'));
 				messageLf = messageLf + "\n";
+				
+				// we loop in reverse order in case we would have to remove a Client
+				// because it has disconnected
 				for(int i = al.size(); --i >= 0;) {
 					ClientThread ct = al.get(i);
-					if(ct.username.equals(toSend) || ct.username.equals(user)) {
+					if(ct.username.equals(toSend) || ct.username.equals(user)) { // In order to send a private message.
 						ct.writeMsg(messageLf);
 					}
 				}

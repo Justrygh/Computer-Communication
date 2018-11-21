@@ -11,7 +11,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.GroupLayout;
 
 /**
- * @author erlichsefi
+ * @authors eli & yoni
  */
 public class SClient extends javax.swing.JFrame {
 	// the Client object
