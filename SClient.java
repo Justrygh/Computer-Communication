@@ -6,29 +6,29 @@
 package Codes;
 
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JTextArea;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+
 
 import javax.swing.GroupLayout;
 
 /**
+ * This class represents the Client
+ *  
  *   @authors eli & yoni
  */
 public class SClient extends javax.swing.JFrame {
-	// the Client object
 	private Client client;
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 3970976847258960979L;
 
 	/**
 	 * Creates new form Client
 	 */
 	public SClient() {
+		
 		initComponents();
-
-
 	}
 
 	/**
@@ -265,28 +265,26 @@ private void _show() {
 		
 		
 	}//GEN-LAST:event_SHOWONLINE
+	/*
+	 * connect to the server
+	 * */
 	private void con() {
 
 		// ok it is a connection request
 		String username = my_name.getText();
-		// empty username ignore it
 		if(username.length() == 0)
 			return;
-		// empty serverAddress ignore it
 		String server = ip_ad.getText().trim();
-		//if(server.length() == 0)
-		//	return;
-		// empty or invalid port numer, ignore it
-		
+
+
 		int port = 1500;
 		try {
 			port = 1500;
 		}
 		catch(Exception en) {
-			return;   // nothing I can do if port number is not valid
+			return;  
 		}
 
-		// try creating a new Client with GUI
 		client = new Client(server, port, username, this);
 		
 		my_name.setEditable(true);
@@ -302,6 +300,7 @@ private void _show() {
 		if(!client.start()) 
 			return;
 	}
+
 	private void Connect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Connect
 		//new SClient("localhost", 1500);
 
@@ -314,7 +313,9 @@ private void _show() {
 			jTextArea_Main.append(str);
 			jTextArea_Main.setCaretPosition(jTextArea_Main.getText().length() - 1);
 		}
-		
+		/*
+		 * send a msg and use the protocol
+		 * */
 	private void Send(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Send
 		String action = "";
 		try {
@@ -391,6 +392,9 @@ private void _show() {
 
 	}//GEN-LAST:event_Send
 
+		/*
+		 * disconnect from the server
+		 * */
 		private void dis() {
 			client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
 			
@@ -401,6 +405,7 @@ private void _show() {
 			my_name.setEnabled(true);
 			jToggleButton_showOnline.setEnabled(false);
 		}
+	
 	private void Disconnect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Disconnect
 		dis();
 		
@@ -414,12 +419,8 @@ private void _show() {
 	 * @param args the command line arguments
 	 */
 	public static void main(String args[]) {
+	
 		
-		/* Set the Nimbus look and feel */
-		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-		/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-		 * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-		 */
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -437,7 +438,7 @@ private void _show() {
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
 			java.util.logging.Logger.getLogger(Client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
-		//</editor-fold>
+	
 		
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
@@ -451,10 +452,17 @@ private void _show() {
 		
 	}
 	
+	/*
+	 * get a msg
+	 * */
 	public String getValue() {
 		return dst.getText();
 	}
 
+
+
+	
+	
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JTextField dst;
 	private javax.swing.JTextField ip_ad;
